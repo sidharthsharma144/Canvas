@@ -1,8 +1,10 @@
 const express = require('express')
-const mongoose = require('mongoose') // Keep this import only
+const mongoose = require('mongoose') 
 const app = express()
 const dotenv = require('dotenv')
 const cors = require('cors')
+const path = require('path')
+
 
 dotenv.config()
 
@@ -15,6 +17,13 @@ if (process.env.NODE_ENV === 'local') {
     app.use(cors({
         credentials: true
     }))
+}
+
+if(process.env.NODE_ENV === 'production'){
+    app.use(express.static(path.join(__dirname,"./frontend/dist")))
+    app.get('*',(req,res)=>{
+        res.sendFile(path.resolve(__dirname,'./','frontend','dist','index.html'))
+    })
 }
 
 const dbConnect = async () => {
@@ -33,6 +42,6 @@ const dbConnect = async () => {
 
 dbConnect()
 
-const PORT = process.env.PORT || 3000 // Default to port 3000 if PORT is not defined
+const PORT = process.env.PORT || 3000 
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}..`))
